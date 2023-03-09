@@ -1,0 +1,81 @@
+import java.util.Scanner;
+public class Licencia {
+	public static void main(String[] args) {
+		Scanner sc = new Scanner(System.in);
+		int simulacion = 0, opcion = 0, licencia = 0, costo = 0, utilidadtotal = 0;//inicializan variables
+		System.out.print("Cuantas licencias desea comprar?"
+				+ "\n\t1.- 100"
+				+ "\n\t2.- 150"
+				+ "\n\t3.- 200"
+				+ "\n\t4.- 250"
+				+ "\n\t5.- 300"
+				+ "\nOpcion:");
+		opcion = sc.nextInt();//Eliges una opcion de cuantas licencias compras
+		switch(opcion) {//Switch para validar que la opcion este en el rango
+		case 1:
+			licencia = 100;
+			break;
+		case 2:
+			licencia = 150;
+			break;
+		case 3:
+			licencia = 200;
+			break;
+		case 4:
+			licencia = 250;
+			break;
+		case 5:
+			licencia = 300;
+			break;
+		default:
+			System.out.print("Elije una opcion: ");	
+		}
+		System.out.print("Cuantas simulaciones desea? ");
+		simulacion = sc.nextInt();//Cuantas simulaciones desea realizar
+		costo = licencia * 75;
+		
+		double[] ud = new double[simulacion];//Arreglo donde guardas todas las simulaciones
+		System.out.println();//Espacio pa que se vea bonito
+		System.out.println("i|\tDato\t|\tLV\t|\tLD\t|\tCosto\t|\tIxV\t|\tIxD\t|\tUtilidad");//pa imprimir la tabla
+		for(int i=0;i<simulacion;i++) {//for para sacar numeros random entre el 0 y el 1 y validar jijiji
+			double random = Math.random(), dato = (double)(Math.round(random * 100.0) / 100.0);
+			int licenciavendida = 0;
+			if(random <= 0.30) {
+				licenciavendida = 100;
+			}else if(random > 0.30 & random <= 0.50) {
+				licenciavendida = 150;
+			}else if(random > 0.50 & random <= 0.80) {
+				licenciavendida = 200;
+			}else if(random > 0.80 & random <= 0.95) {
+				licenciavendida = 250;
+			}else if(random > 0.95 & random <= 0.99) {
+				licenciavendida = 300;
+			}else if(random > 0.99) {
+				licenciavendida = 300;
+			}
+			int licenciadevuelta = licencia - licenciavendida;//calcular las licencias que se devolvieron
+			if(licenciadevuelta < 0) licenciadevuelta = 0;//poner si las licencias devueltas son menor a 0 pues son 0
+			
+			int ingresoventa = licenciavendida * 100;//calcular los ingresos de venta
+			int ingresoD = licenciadevuelta * 25;//calcular los ingresos de devolucion
+			int utilidad = (ingresoventa + ingresoD) - costo;//calcular la utilidad
+			
+			ud[i] = utilidad;//igualar
+			utilidadtotal = utilidadtotal + utilidad;//calcular la utilidad total
+			
+			System.out.println(i + "|\t" + dato + "\t|\t" + licenciavendida + "\t|\t" + licenciadevuelta + "\t|\t" + costo + "\t|\t" + ingresoventa
+                    + "\t|\t" + ingresoD + "\t|\t" + utilidad);//imprimir 
+		}
+		//Media y desviacion estandar
+		double media = utilidadtotal / simulacion;//calcular la media
+		double desviacion = 0;
+		for(int j=0;j<simulacion;j++) {//Calcular la desviacion
+			ud[j] = (ud[j] - media);
+			ud[j] = Math.pow(ud[j], 2);
+			desviacion = desviacion + ud[j];
+		}
+		double desviacionE = Math.sqrt(desviacion / (simulacion - 1));//calcular la desviacion estandar
+		System.out.println("Media: " + media + " Desviacion estandar: " + desviacionE);//imprimir
+	}
+
+}
