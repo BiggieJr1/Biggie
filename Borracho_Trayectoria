@@ -1,0 +1,134 @@
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.awt.*;
+import org.math.plot.*;
+
+public class Borracho2 extends JFrame implements ActionListener{
+    static int H = 0,usos = 0;
+    static double [] FinalX = {0};
+    static double [] FinalY = {0};
+    JButton boton;
+    JTextField texto;					//Se declaran variables
+    JTable tabla;
+    JPanel tablapanel;
+    Plot2DPanel grafica = new Plot2DPanel();
+    JPanel contenido = new JPanel();
+    
+    public Borracho2(){
+        super("Simulacion de don bubu");
+        setSize(1440,900);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        texto = new JTextField(5);
+        boton = new JButton("Iniciar Simulaciones");
+        boton.addActionListener(this);
+        contenido.add(new JLabel("INGRESE LA CANTIDAD DE SIMULACIONES: "));
+        contenido.add(texto);
+        contenido.add(boton);
+        add(contenido,BorderLayout.SOUTH);
+        setVisible(true);
+        add(grafica,BorderLayout.CENTER);
+    }
+    
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        try{
+            if(usos!=0){
+                contenido.remove(3);
+                contenido.updateUI();
+            }
+            H=0;
+            double [] BFinalX = {0};
+            FinalX = BFinalX;
+            double [] BFinalY = {0};
+            FinalY = BFinalY;
+            grafica.removeAllPlots();
+            double [] XL = {2,2,-2,-2,2};
+            double [] YL = {2,-2,-2,2,2};
+            grafica.addScatterPlot("LIMITES", Color.BLUE, XL, YL);
+            grafica.addLinePlot("LIMITELINEA", Color.BLUE, XL, YL);
+            int sim = Integer.parseInt(texto.getText());
+            simulacion(sim);
+            usos++;
+        }catch (Exception e4){}    
+    }
+
+    public void simulacion(int sim){
+        Timer contador = new Timer();
+            TimerTask trazado = new TimerTask() {
+                int i=1,red,green,blue;
+                @Override
+                public void run() {
+                double [] x = {0};
+                double [] y = {0};
+                double newX=0, newY=0;
+                red = (int)(Math.random()*255);
+                green = (int)(Math.random()*255);//Pa poner colores pseudo-aleatorios
+                blue = (int)(Math.random()*255);
+                Color color = new Color(red,green,blue);
+                    
+                    for(int k=0;k<10;k++){
+                        double dato = Math.random();
+                        if (dato <= 0.25){
+                            newX++;
+                        }else if (dato > 0.25 & dato <= 0.5){
+                            newX--;
+                        }else if (dato > 0.5 & dato <= 0.75){
+                            newY++;
+                        }else if (dato > 0.75 & dato <= 1){
+                            newY--;
+                        }
+                        double [] arrayX = addV(x,newX);
+                        double [] arrayY = addV(y,newY);
+                        x=arrayX;
+                        y=arrayY;
+                    }       
+                    grafica.addScatterPlot("DATOS "+i, Color.black, x, y);
+                    grafica.addLinePlot("LINEA "+i, color, x, y);
+                    grafica.removePlot(i+1);
+                    if(i==1){
+                        FinalX [0] = x[x.length-1];
+                        FinalY [0] = y[y.length-1];
+                    }else{
+                        double [] AFinalX = addV(FinalX,x[x.length-1]);
+                        double [] AFinalY = addV(FinalY,y[y.length-1]);
+                        FinalX = AFinalX;
+                        FinalY = AFinalY;
+                    }
+                    grafica.addScatterPlot("PUNTOS FINALES", Color.RED, FinalX, FinalY);
+                    if(i<sim) grafica.removePlot(i+2);
+                    
+                    if (i==sim){
+                        for(int j = 0; j <FinalX.length; j++){
+                            if (FinalX[j] >= 2 || FinalY[j] >= 2 || FinalX[j] <= -2 || FinalY[j] <= -2) H++;
+                        }
+                        double Prob = 0,h=H,S=sim;
+                        Prob = h*100/S;
+                        contenido.add(new JLabel("LA PROBABILIDAD ES DE: "+Double.toString(Prob)+"%"));
+                        contenido.add(new JLabel("EL NUMERO DE ACIERTOS ES DE: "+H));
+                        contenido.updateUI();
+                        contador.cancel();
+                    }
+
+                    i++;
+                }
+            };
+            contador.schedule(trazado, 0, 5000/sim);
+    }
+    private double[] addV(double valoresant[], double nuevoValor){
+        double nuevoX[] = new double[valoresant.length+1];
+        for(int i = 0; i<valoresant.length; i++){
+            nuevoX[i]= valoresant[i];
+        }
+        nuevoX[nuevoX.length-1] = nuevoValor;
+        return nuevoX;
+    }
+    
+    public static void main(String [] a) {
+        Borracho2 V = new Borracho2(); 
+         V.setVisible(true);
+     }
+
+}
